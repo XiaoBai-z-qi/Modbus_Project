@@ -29,27 +29,27 @@
 
 /* ----------------------- Static variables ---------------------------------*/
 static USHORT   usRegInputStart = REG_INPUT_START;
-static USHORT   usRegInputBuf[REG_INPUT_NREGS];
+static USHORT   usRegInputBuf[REG_INPUT_NREGS] = {2, 5, 7, 10};
 
 /* ----------------------- Start implementation -----------------------------*/
-int
-modbus_test( void )
-{
-    eMBErrorCode    eStatus;
+// int
+// modbus_test( void )
+// {
+//     eMBErrorCode    eStatus;
 
-    eStatus = eMBInit( MB_RTU, 0x0A, 0, 38400, MB_PAR_EVEN );
+//     eStatus = eMBInit( MB_RTU, 0x0A, 0, 38400, MB_PAR_EVEN );
 
-    /* Enable the Modbus Protocol Stack. */
-    eStatus = eMBEnable(  );
+//     /* Enable the Modbus Protocol Stack. */
+//     eStatus = eMBEnable(  );
 
-    for( ;; )
-    {
-        ( void )eMBPoll(  );
+//     for( ;; )
+//     {
+//         ( void )eMBPoll(  );
 
-        /* Here we simply count the number of poll cycles. */
-        usRegInputBuf[0]++;
-    }
-}
+//         /* Here we simply count the number of poll cycles. */
+//         usRegInputBuf[0]++;
+//     }
+// }
 
 eMBErrorCode
 eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
@@ -57,6 +57,7 @@ eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
     eMBErrorCode    eStatus = MB_ENOERR;
     int             iRegIndex;
 
+    usAddress -= 1;
     if( ( usAddress >= REG_INPUT_START )
         && ( usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS ) )
     {
