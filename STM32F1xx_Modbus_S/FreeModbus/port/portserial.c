@@ -36,12 +36,23 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
     /* If xRXEnable enable serial receive interrupts. If xTxENable enable
      * transmitter empty interrupts.
      */
+    if(xRxEnable){
+        __HAL_UART_ENABLE_IT(&QS_UART, UART_IT_RXNE);
+    }else{
+        __HAL_UART_DISABLE_IT(&QS_UART, UART_IT_RXNE);
+    }
+
+    if(xTxEnable){
+        __HAL_UART_ENABLE_IT(&QS_UART, UART_IT_TXE);
+    }else{
+        __HAL_UART_DISABLE_IT(&QS_UART, UART_IT_TXE);
+    }
 }
 
 BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
-    return FALSE;
+    return TRUE;
 }
 
 BOOL
@@ -50,6 +61,7 @@ xMBPortSerialPutByte( CHAR ucByte )
     /* Put a byte in the UARTs transmit buffer. This function is called
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
+    QS_UART.Instance->DR = (uint8_t)ucByte;
     return TRUE;
 }
 
@@ -59,6 +71,7 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
+    *pucByte = (CHAR)(QS_UART.Instance->DR & 0xFF);
     return TRUE;
 }
 
@@ -81,4 +94,17 @@ static void prvvUARTTxReadyISR( void )
 static void prvvUARTRxISR( void )
 {
     pxMBFrameCBByteReceived(  );
+}
+
+void QS_USART_IRQ_HANDLER(void)
+{
+    if(__HAL_UART_GET_FLAG(&QS_UART, UART_FLAG_RXNE) != RESET){
+        //不需要CLEAR FLAG自动清除
+        prvvUARTRxISR();
+    }
+
+    if(__HAL_UART_GET_FLAG(&QS_UART, UART_FLAG_TXE) != RESET){
+        //不需要CLEAR FLAG自动清除
+        prvvUARTTxReadyISR();
+    }
 }

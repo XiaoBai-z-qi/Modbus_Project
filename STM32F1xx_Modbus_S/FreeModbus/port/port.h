@@ -25,12 +25,29 @@
 #include <assert.h>
 #include <inttypes.h>
 
+#include "stm32f1xx_hal.h"
+#include "tim.h"
+#include "usart.h"
+#include "FreeRTOS.h"
+#include "Task.h"
+
+
 #define	INLINE                      inline
 #define PR_BEGIN_EXTERN_C           extern "C" {
 #define	PR_END_EXTERN_C             }
 
-#define ENTER_CRITICAL_SECTION( )   
-#define EXIT_CRITICAL_SECTION( )    
+#define ENTER_CRITICAL_SECTION( )   taskENTER_CRITICAL()
+#define EXIT_CRITICAL_SECTION( )    taskEXIT_CRITICAL()
+
+/* ----------------------- Add Define ----------------------------------*/
+#define QS_TIM                      htim2
+#define QS_TIM_PSC                  (72 * 50)
+#define QS_TIM_IRQ_HANDLER          TIM2_IRQHandler
+
+#define QS_UART                     huart2
+#define QS_USART_IRQ_HANDLER        USART2_IRQHandler
+
+
 
 typedef uint8_t BOOL;
 

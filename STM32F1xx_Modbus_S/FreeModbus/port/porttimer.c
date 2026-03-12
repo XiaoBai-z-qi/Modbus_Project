@@ -33,7 +33,9 @@ static void prvvTIMERExpiredISR( void );
 BOOL
 xMBPortTimersInit( USHORT usTim1Timerout50us )
 {
-    return FALSE;
+    QS_TIM.Instance->PSC = QS_TIM_PSC;
+    QS_TIM.Instance->ARR = usTim1Timerout50us;
+    return TRUE;
 }
 
 
@@ -41,12 +43,16 @@ inline void
 vMBPortTimersEnable(  )
 {
     /* Enable the timer with the timeout passed to xMBPortTimersInit( ) */
+    __HAL_TIM_SET_COUNTER(&QS_TIM, 0);
+    HAL_TIM_Base_Start_IT(&QS_TIM);
 }
 
 inline void
 vMBPortTimersDisable(  )
 {
     /* Disable any pending timers. */
+    HAL_TIM_Base_Stop_IT(&QS_TIM);
+    __HAL_TIM_SET_COUNTER(&QS_TIM, 0);
 }
 
 /* Create an ISR which is called whenever the timer has expired. This function
@@ -56,5 +62,13 @@ vMBPortTimersDisable(  )
 static void prvvTIMERExpiredISR( void )
 {
     ( void )pxMBPortCBTimerExpired(  );
+}
+
+void QS_TIM_IRQ_HANDLER(void)
+{
+    if(__HAL_TIM_GET_FLAG(&QS_TIM, TIM_FLAG_UPDATE) != RESET){
+        __HAL_TIM_CLEAR_FLAG(&QS_TIM, TIM_FLAG_UPDATE);
+        prvvTIMERExpiredISR();
+    }
 }
 
