@@ -25,22 +25,22 @@
 
 /* ----------------------- Input Defines And Static variables------------------------------------------*/
 #define REG_INPUT_START 1000
-#define REG_INPUT_NREGS 4
+#define REG_INPUT_NREGS 10
 static USHORT   usRegInputStart = REG_INPUT_START;
-static USHORT   usRegInputBuf[REG_INPUT_NREGS] = {2, 5, 7, 10};
+static USHORT   usRegInputBuf[REG_INPUT_NREGS] = {0};
 
 /* ----------------------- Holding Defines And Static variables------------------------------------------*/
 #define REG_HOLDING_START 1000
-#define REG_HOLDING_NREGS 4
+#define REG_HOLDING_NREGS 10
 static USHORT   usRegHoldingStart = REG_HOLDING_START;
-static USHORT   usRegHoldingBuf[REG_HOLDING_NREGS] = {7, 3, 2, 1};
+static USHORT   usRegHoldingBuf[REG_HOLDING_NREGS] = {0};
 
-/* ----------------------- Holding Defines And Static variables------------------------------------------*/
+/* ----------------------- Coils Defines And Static variables------------------------------------------*/
 #define REG_COILS_START 1000
-#define REG_COILS_NCOILS  16
+#define REG_COILS_NCOILS  10
 static USHORT   usRegCoilsStart = REG_COILS_START;
 #define REG_COILS_BYTES      ((REG_COILS_NCOILS + 7) / 8)
-static UCHAR    ucRegCoilsBuf[REG_COILS_BYTES] = {0xb1, 0xc3};
+static UCHAR   ucRegCoilsBuf[REG_COILS_BYTES] = {0};
 
 
 
@@ -212,6 +212,92 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
 {
     return MB_ENOREG;
 }
+
+BOOL
+eMBGetRegHolding( USHORT usAddress, USHORT *usValue )
+{
+    if(usAddress < REG_HOLDING_START ||
+       usAddress >= REG_HOLDING_START + REG_HOLDING_NREGS)
+    {
+        return FALSE;
+    }
+
+    *usValue = usRegHoldingBuf[usAddress - REG_HOLDING_START];
+    return TRUE;
+}
+
+BOOL
+eMBSetRegHolding( USHORT usAddress, USHORT usValue )
+{
+    if(usAddress < REG_HOLDING_START ||
+       usAddress >= REG_HOLDING_START + REG_HOLDING_NREGS)
+    {
+        return FALSE;
+    }
+
+    usRegHoldingBuf[usAddress - REG_HOLDING_START] = usValue;
+    return TRUE;
+}
+
+BOOL
+eMBGetRegInput( USHORT usAddress, USHORT *usValue)
+{
+    if(usAddress < REG_INPUT_START ||
+       usAddress >= REG_INPUT_START + REG_INPUT_NREGS)
+    {
+        return FALSE;
+    }
+
+    *usValue = usRegInputBuf[usAddress - REG_INPUT_START];
+    return TRUE;
+}
+
+BOOL
+eMBSetRegInput( USHORT usAddress, USHORT usValue )
+{
+    if(usAddress < REG_INPUT_START ||
+       usAddress >= REG_INPUT_START + REG_INPUT_NREGS)
+    {
+        return FALSE;
+    }
+
+    usRegInputBuf[usAddress - REG_INPUT_START] = usValue;
+    return TRUE;
+}
+
+BOOL
+eMBGetRegCoils( USHORT usAddress, UCHAR *usValue )
+{
+    
+    if(usAddress < REG_COILS_START ||
+       usAddress >= REG_COILS_START + REG_COILS_NCOILS)
+    {
+        return FALSE;
+    }
+
+    USHORT index = usAddress - REG_COILS_START;
+    *usValue = ( ucRegCoilsBuf[(index / 8)] & ( 1 << (index % 8) ) ) ? 1 : 0;
+    return TRUE;
+}
+
+BOOL
+eMBSetRegCoils( USHORT usAddress, UCHAR usValue )
+{
+    if(usAddress < REG_COILS_START ||
+       usAddress >= REG_COILS_START + REG_COILS_NCOILS)
+    {
+        return FALSE;
+    }
+
+    USHORT index = usAddress - REG_COILS_START;
+    if(usValue){
+        ucRegCoilsBuf[index / 8] |= ( 1 << (index % 8) );
+    }else{
+        ucRegCoilsBuf[index / 8] &= ~( 1 << (index % 8) );
+    }
+    return TRUE;
+}
+
 
 // int
 // modbus_test( void )

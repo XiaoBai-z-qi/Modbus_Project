@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "qs_modbus_app.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,10 +116,36 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  uint16_t inputreg = 0;
+  uint16_t holdingreg = 0;
+  uint8_t coilstatus = 0;
   /* Infinite loop */
   for(;;)
   {
-    HAL_GPIO_TogglePin(LED_RUN_GPIO_Port, LED_RUN_Pin);
+    eMBGetRegInput(1000, &inputreg);
+    eMBGetRegHolding(1001, &holdingreg);
+    eMBGetRegCoils(1002, &coilstatus);
+    if(inputreg == 299){
+      HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    }else{
+      HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    }
+
+    if(holdingreg == 499){
+      HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+      eMBSetRegInput(1000, 299);
+    }else{
+      HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+      eMBSetRegInput(1000, 99);
+    }
+
+    if(coilstatus == 1)
+    {
+      HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+    }else{
+      HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+    }
+    
     osDelay(100);
   }
   /* USER CODE END StartDefaultTask */

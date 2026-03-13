@@ -17,6 +17,9 @@ void eQSModbusSlaveTaskInit(void)
 void eQSModbusSlaveTask(void *pvParameters)
 {
     eMBErrorCode    eStatus;
+    eMBSetRegInput(1004, 91);
+    eMBSetRegHolding(1005, 100);
+    eMBSetRegCoils(1003, 1);
     eStatus = eMBInit( MB_RTU, 0x01, 0, 9600, MB_PAR_NONE );
     eStatus = eMBEnable(  );
 	if(eStatus != MB_ENOERR)

@@ -410,6 +410,16 @@ eMBErrorCode    eMBRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress,
 eMBErrorCode    eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress,
                                   USHORT usNDiscrete );
 
+
+/* ----------------------- Functions ------------------------------------------*/
+                                
+BOOL    eMBGetRegInput( USHORT usAddress, USHORT *usValue);
+BOOL    eMBSetRegInput( USHORT usAddress, USHORT usValue );
+BOOL    eMBGetRegHolding( USHORT usAddress, USHORT *usValue );
+BOOL    eMBSetRegHolding( USHORT usAddress, USHORT usValue );
+BOOL    eMBGetRegCoils( USHORT usAddress, UCHAR *usValue );
+BOOL    eMBSetRegCoils( USHORT usAddress, UCHAR usValue );
+
 #ifdef __cplusplus
 PR_END_EXTERN_C
 #endif
