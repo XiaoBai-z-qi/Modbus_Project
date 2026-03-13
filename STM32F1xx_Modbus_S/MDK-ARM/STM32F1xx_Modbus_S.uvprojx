@@ -651,11 +651,6 @@
           <GroupName>Modbus_App</GroupName>
           <Files>
             <File>
-              <FileName>modbus_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\modbus_app.c</FilePath>
-            </File>
-            <File>
               <FileName>qs_modbus_app.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\app\qs_modbus_app.c</FilePath>
@@ -664,6 +659,11 @@
               <FileName>qs_modbus_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\app\qs_modbus_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>mb_slave_reg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FreeModbus\mb_slave_reg.c</FilePath>
             </File>
           </Files>
         </Group>
