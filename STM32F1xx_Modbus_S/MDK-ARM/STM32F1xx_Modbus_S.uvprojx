@@ -663,7 +663,7 @@
             <File>
               <FileName>mb_slave_reg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\FreeModbus\mb_slave_reg.c</FilePath>
+              <FilePath>..\FreeModbus\app\mb_slave_reg.c</FilePath>
             </File>
           </Files>
         </Group>

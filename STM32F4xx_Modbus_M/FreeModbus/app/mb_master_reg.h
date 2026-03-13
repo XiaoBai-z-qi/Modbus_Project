@@ -1,5 +1,5 @@
-#ifndef    USER_APP
-#define USER_APP
+#ifndef 	MB_MASTER_REG_APP
+#define 	MB_MASTER_REG_APP
 /* ----------------------- Modbus includes ----------------------------------*/
 #include "mb.h"
 #include "mb_m.h"

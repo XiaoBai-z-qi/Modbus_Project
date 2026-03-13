@@ -586,11 +586,6 @@
           <GroupName>Modbus_Function</GroupName>
           <Files>
             <File>
-              <FileName>port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\freertos\port.c</FilePath>
-            </File>
-            <File>
               <FileName>portevent_m.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\freertos\portevent_m.c</FilePath>
@@ -640,6 +635,11 @@
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\functions\mbutils.c</FilePath>
             </File>
+            <File>
+              <FileName>mb_m.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FreeModbus\freertos\mb_m.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -661,21 +661,6 @@
           <GroupName>Modbus_App</GroupName>
           <Files>
             <File>
-              <FileName>mb_m.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\mb_m.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_mb_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\user_mb_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_mb_app_m.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\user_mb_app_m.c</FilePath>
-            </File>
-            <File>
               <FileName>qs_modbus_app.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\app\qs_modbus_app.c</FilePath>
@@ -684,6 +669,11 @@
               <FileName>qs_modbus_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\app\qs_modbus_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>mb_master_reg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FreeModbus\app\mb_master_reg.c</FilePath>
             </File>
           </Files>
         </Group>
