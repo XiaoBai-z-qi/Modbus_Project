@@ -606,11 +606,6 @@
               <FilePath>..\FreeModbus\functions\mbfunccoils_m.c</FilePath>
             </File>
             <File>
-              <FileName>mbfuncdiag.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\functions\mbfuncdiag.c</FilePath>
-            </File>
-            <File>
               <FileName>mbfuncdisc_m.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\functions\mbfuncdisc_m.c</FilePath>

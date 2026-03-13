@@ -30,9 +30,6 @@
 #if MB_MASTER_RTU_ENABLED > 0 || MB_MASTER_ASCII_ENABLED > 0
 /* ----------------------- Variables ----------------------------------------*/
 static USHORT usT35TimeOut50us;
-static struct rt_timer timer;
-static void prvvTIMERExpiredISR(void);
-static void timer_timeout_ind(void* parameter);
 
 /* ----------------------- static functions ---------------------------------*/
 static void prvvTIMERExpiredISR(void);
@@ -42,56 +39,47 @@ BOOL xMBMasterPortTimersInit(USHORT usTimeOut50us)
 {
     /* backup T35 ticks */
     usT35TimeOut50us = usTimeOut50us;
-
-    rt_timer_init(&timer, "master timer",
-                   timer_timeout_ind, /* bind timeout callback function */
-                   RT_NULL,
-                   (50 * usT35TimeOut50us) / (1000 * 1000 / RT_TICK_PER_SECOND),
-                   RT_TIMER_FLAG_ONE_SHOT); /* one shot */
-
+    QS_TIM.Instance->PSC = QS_TIM_PSC;
+    QS_TIM.Instance->ARR = usT35TimeOut50us;
     return TRUE;
 }
 
 void vMBMasterPortTimersT35Enable()
 {
-    rt_tick_t timer_tick = (50 * usT35TimeOut50us)
-            / (1000 * 1000 / RT_TICK_PER_SECOND);
-
     /* Set current timer mode, don't change it.*/
     vMBMasterSetCurTimerMode(MB_TMODE_T35);
 
-    rt_timer_control(&timer, RT_TIMER_CTRL_SET_TIME, &timer_tick);
-
-    rt_timer_start(&timer);
+    HAL_TIM_Base_Stop_IT(&QS_TIM);
+    __HAL_TIM_SET_COUNTER(&QS_TIM, 0);
+    __HAL_TIM_SET_AUTORELOAD(&QS_TIM, usT35TimeOut50us);
+    HAL_TIM_Base_Start_IT(&QS_TIM);
 }
 
 void vMBMasterPortTimersConvertDelayEnable()
 {
-    rt_tick_t timer_tick = MB_MASTER_DELAY_MS_CONVERT * RT_TICK_PER_SECOND / 1000;
-
     /* Set current timer mode, don't change it.*/
     vMBMasterSetCurTimerMode(MB_TMODE_CONVERT_DELAY);
 
-    rt_timer_control(&timer, RT_TIMER_CTRL_SET_TIME, &timer_tick);
-
-    rt_timer_start(&timer);
+    HAL_TIM_Base_Stop_IT(&QS_TIM);
+    __HAL_TIM_SET_COUNTER(&QS_TIM, 0);
+    __HAL_TIM_SET_AUTORELOAD(&QS_TIM, MB_MASTER_DELAY_MS_CONVERT * 20);
+    HAL_TIM_Base_Start_IT(&QS_TIM);
 }
 
 void vMBMasterPortTimersRespondTimeoutEnable()
 {
-    rt_tick_t timer_tick = MB_MASTER_TIMEOUT_MS_RESPOND * RT_TICK_PER_SECOND / 1000;
-
     /* Set current timer mode, don't change it.*/
     vMBMasterSetCurTimerMode(MB_TMODE_RESPOND_TIMEOUT);
 
-    rt_timer_control(&timer, RT_TIMER_CTRL_SET_TIME, &timer_tick);
-
-    rt_timer_start(&timer);
+    HAL_TIM_Base_Stop_IT(&QS_TIM);
+    __HAL_TIM_SET_COUNTER(&QS_TIM, 0);
+    __HAL_TIM_SET_AUTORELOAD(&QS_TIM, MB_MASTER_TIMEOUT_MS_RESPOND * 20);
+    HAL_TIM_Base_Start_IT(&QS_TIM);
 }
 
 void vMBMasterPortTimersDisable()
 {
-    rt_timer_stop(&timer);
+    HAL_TIM_Base_Stop_IT(&QS_TIM);
 }
 
 void prvvTIMERExpiredISR(void)
@@ -99,9 +87,12 @@ void prvvTIMERExpiredISR(void)
     (void) pxMBMasterPortCBTimerExpired();
 }
 
-static void timer_timeout_ind(void* parameter)
+void QS_TIM_IRQHANDLER(void)
 {
-    prvvTIMERExpiredISR();
+    if(__HAL_TIM_GET_FLAG(&QS_TIM, TIM_FLAG_UPDATE) != RESET){
+        __HAL_TIM_CLEAR_FLAG(&QS_TIM, TIM_FLAG_UPDATE);
+        prvvTIMERExpiredISR();
+    }
 }
 
 #endif

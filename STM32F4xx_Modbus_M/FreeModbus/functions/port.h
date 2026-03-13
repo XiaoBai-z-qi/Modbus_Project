@@ -22,20 +22,38 @@
 #ifndef _PORT_H
 #define _PORT_H
 
-#include <stm32f10x_conf.h>
+#include "stm32f4xx_hal.h"
+#include "tim.h"
+#include "usart.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "event_groups.h"
 #include "mbconfig.h"
-#include <rthw.h>
-#include <rtthread.h>
+
 
 #include <assert.h>
 #include <inttypes.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 
 #define	INLINE
 #define PR_BEGIN_EXTERN_C           extern "C" {
 #define	PR_END_EXTERN_C             }
 
-#define ENTER_CRITICAL_SECTION()	EnterCriticalSection()
-#define EXIT_CRITICAL_SECTION()    ExitCriticalSection()
+#define ENTER_CRITICAL_SECTION()	taskENTER_CRITICAL()
+#define EXIT_CRITICAL_SECTION()     taskEXIT_CRITICAL()
+
+#define xIsInISR() ((xPortIsInsideInterrupt() == pdTRUE) ? TRUE : FALSE)
+
+/* ----------------------- Add Define ----------------------------------*/
+#define QS_TIM                      htim2
+#define QS_TIM_PSC                  ( (100 * 50) - 1 )
+#define QS_TIM_IRQHANDLER           TIM2_IRQHandler
+
+#define QS_UART                     huart2
+#define QS_USART_IRQHANDLER         USART2_IRQHandler
 
 typedef uint8_t BOOL;
 
@@ -56,7 +74,6 @@ typedef int32_t LONG;
 #define FALSE           0
 #endif
 
-void EnterCriticalSection(void);
-void ExitCriticalSection(void);
+
 
 #endif
