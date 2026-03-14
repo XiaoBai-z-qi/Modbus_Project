@@ -24,22 +24,22 @@
 #include "mbport.h"
 
 /* ----------------------- Input Defines And Static variables------------------------------------------*/
-#define REG_INPUT_START 1000
-#define REG_INPUT_NREGS 10
-static USHORT   usRegInputStart = REG_INPUT_START;
-static USHORT   usRegInputBuf[REG_INPUT_NREGS] = {0};
+#define S_REG_INPUT_START 0
+#define S_REG_INPUT_NREGS 10
+static USHORT   usRegInputStart = S_REG_INPUT_START;
+static USHORT   usRegInputBuf[S_REG_INPUT_NREGS] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19};
 
 /* ----------------------- Holding Defines And Static variables------------------------------------------*/
-#define REG_HOLDING_START 1000
-#define REG_HOLDING_NREGS 10
-static USHORT   usRegHoldingStart = REG_HOLDING_START;
-static USHORT   usRegHoldingBuf[REG_HOLDING_NREGS] = {0};
+#define S_REG_HOLDING_START 0
+#define S_REG_HOLDING_NREGS 10
+static USHORT   usRegHoldingStart = S_REG_HOLDING_START;
+static USHORT   usRegHoldingBuf[S_REG_HOLDING_NREGS] = {0};
 
 /* ----------------------- Coils Defines And Static variables------------------------------------------*/
-#define REG_COILS_START 1000
-#define REG_COILS_NCOILS  10
-static USHORT   usRegCoilsStart = REG_COILS_START;
-#define REG_COILS_BYTES      ((REG_COILS_NCOILS + 7) / 8)
+#define S_REG_COILS_START 0
+#define S_REG_COILS_NCOILS  10
+static USHORT   usRegCoilsStart = S_REG_COILS_START;
+#define REG_COILS_BYTES      ((S_REG_COILS_NCOILS + 7) / 8)
 static UCHAR   ucRegCoilsBuf[REG_COILS_BYTES] = {0};
 
 
@@ -50,6 +50,8 @@ eMBErrorCode
 eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
 {
     eMBErrorCode    eStatus = MB_ENOERR;
+	USHORT          REG_INPUT_START = S_REG_INPUT_START;
+	USHORT          REG_INPUT_NREGS = S_REG_INPUT_NREGS;
     int             iRegIndex;
 
     usAddress--;
@@ -80,6 +82,8 @@ eMBRegHoldingCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs,
                  eMBRegisterMode eMode )
 {
     eMBErrorCode    eStatus = MB_ENOERR;
+	USHORT          REG_HOLDING_START = S_REG_HOLDING_NREGS;
+	USHORT          REG_HOLDING_NREGS = S_REG_HOLDING_NREGS;
     int             iRegIndex;
 
     usAddress--;
@@ -124,6 +128,8 @@ eMBRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils,
                eMBRegisterMode eMode )
 {
     eMBErrorCode eStatus = MB_ENOERR;
+	USHORT          REG_COILS_START = S_REG_COILS_START;
+	USHORT          REG_COILS_NCOILS = S_REG_COILS_NCOILS;
     USHORT iRegIndex;       //线圈数组中的字节索引
     USHORT iBitIndex;       //字节中的bit索引
     USHORT iCoilIndex;      //当前线圈编号
@@ -216,6 +222,8 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
 BOOL
 eMBGetRegHolding( USHORT usAddress, USHORT *usValue )
 {
+	USHORT          REG_HOLDING_START = S_REG_HOLDING_NREGS;
+	USHORT          REG_HOLDING_NREGS = S_REG_HOLDING_NREGS;
     if(usAddress < REG_HOLDING_START ||
        usAddress >= REG_HOLDING_START + REG_HOLDING_NREGS)
     {
@@ -229,6 +237,8 @@ eMBGetRegHolding( USHORT usAddress, USHORT *usValue )
 BOOL
 eMBSetRegHolding( USHORT usAddress, USHORT usValue )
 {
+	USHORT          REG_HOLDING_START = S_REG_HOLDING_NREGS;
+	USHORT          REG_HOLDING_NREGS = S_REG_HOLDING_NREGS;
     if(usAddress < REG_HOLDING_START ||
        usAddress >= REG_HOLDING_START + REG_HOLDING_NREGS)
     {
@@ -242,6 +252,8 @@ eMBSetRegHolding( USHORT usAddress, USHORT usValue )
 BOOL
 eMBGetRegInput( USHORT usAddress, USHORT *usValue)
 {
+	USHORT          REG_INPUT_START = S_REG_INPUT_START;
+	USHORT          REG_INPUT_NREGS = S_REG_INPUT_NREGS;
     if(usAddress < REG_INPUT_START ||
        usAddress >= REG_INPUT_START + REG_INPUT_NREGS)
     {
@@ -255,6 +267,8 @@ eMBGetRegInput( USHORT usAddress, USHORT *usValue)
 BOOL
 eMBSetRegInput( USHORT usAddress, USHORT usValue )
 {
+	USHORT          REG_INPUT_START = S_REG_INPUT_START;
+	USHORT          REG_INPUT_NREGS = S_REG_INPUT_NREGS;
     if(usAddress < REG_INPUT_START ||
        usAddress >= REG_INPUT_START + REG_INPUT_NREGS)
     {
@@ -268,7 +282,8 @@ eMBSetRegInput( USHORT usAddress, USHORT usValue )
 BOOL
 eMBGetRegCoils( USHORT usAddress, UCHAR *usValue )
 {
-    
+    USHORT          REG_COILS_START = S_REG_COILS_START;
+	USHORT          REG_COILS_NCOILS = S_REG_COILS_NCOILS;
     if(usAddress < REG_COILS_START ||
        usAddress >= REG_COILS_START + REG_COILS_NCOILS)
     {
@@ -283,6 +298,8 @@ eMBGetRegCoils( USHORT usAddress, UCHAR *usValue )
 BOOL
 eMBSetRegCoils( USHORT usAddress, UCHAR usValue )
 {
+	USHORT          REG_COILS_START = S_REG_COILS_START;
+	USHORT          REG_COILS_NCOILS = S_REG_COILS_NCOILS;
     if(usAddress < REG_COILS_START ||
        usAddress >= REG_COILS_START + REG_COILS_NCOILS)
     {

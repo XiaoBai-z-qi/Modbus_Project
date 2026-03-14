@@ -4,11 +4,12 @@
 extern USHORT   usMRegInBuf[MB_MASTER_TOTAL_SLAVE_NUM][M_REG_INPUT_NREGS];
 void eQSModbusSlave1(void)
 {
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+    //uint32_t tt = xTaskGetTickCount();
     eMBMasterReqReadInputRegister(QS_SLAVE1_ADDR, 0, 3, 100);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
     
-    
+	//tt = xTaskGetTickCount() - tt;
+    //vDebugPrint("%d, %d, %d, %d\r\n", usMRegInBuf[0][0], usMRegInBuf[0][1], usMRegInBuf[0][2], tt);
+    HAL_GPIO_TogglePin(LED_RUN_GPIO_Port, LED_RUN_Pin);
 }
 
 

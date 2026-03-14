@@ -36,7 +36,7 @@ void eQSModbusMasterTask(void *pvParameters)
     while(1)
     {
         eMBMasterPoll(  );
-		vTaskDelay(pdMS_TO_TICKS(10));  
+		//vTaskDelay(pdMS_TO_TICKS(10));  
     }
 }
 
@@ -46,7 +46,7 @@ void eQSModbusSlavePollTask(void *pvParameters)
     {
         eQSModbusSlave1();
         eQSModbusSlave2();
-        vTaskDelay(pdMS_TO_TICKS(100));
+        //vTaskDelay(pdMS_TO_TICKS(10));
         
     }
 }
