@@ -3,7 +3,7 @@
 <title>Static Call Graph - [STM32F1xx_Modbus_S\STM32F1xx_Modbus_S.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image STM32F1xx_Modbus_S\STM32F1xx_Modbus_S.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Fri Mar 13 21:59:46 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sat Mar 14 08:25:54 2026
 <BR><P>
 <H3>Maximum Stack Usage =        240 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -768,15 +768,15 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> mb.o(.data)
 </UL>
-<P><STRONG><a name="[84]"></a>eMBGetRegCoils</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBGetRegCoils))
+<P><STRONG><a name="[84]"></a>eMBGetRegCoils</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBGetRegCoils))
 <BR><BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
-<P><STRONG><a name="[83]"></a>eMBGetRegHolding</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBGetRegHolding))
+<P><STRONG><a name="[83]"></a>eMBGetRegHolding</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBGetRegHolding))
 <BR><BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
-<P><STRONG><a name="[82]"></a>eMBGetRegInput</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBGetRegInput))
+<P><STRONG><a name="[82]"></a>eMBGetRegInput</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBGetRegInput))
 <BR><BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 </UL>
 
@@ -848,7 +848,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> mb.o(i.eMBInit)
 </UL>
-<P><STRONG><a name="[8c]"></a>eMBRegCoilsCB</STRONG> (Thumb, 196 bytes, Stack size 32 bytes, mb_slave_reg.o(i.eMBRegCoilsCB))
+<P><STRONG><a name="[8c]"></a>eMBRegCoilsCB</STRONG> (Thumb, 188 bytes, Stack size 32 bytes, mb_slave_reg.o(i.eMBRegCoilsCB))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = eMBRegCoilsCB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eMBFuncWriteMultipleCoils
@@ -860,7 +860,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eMBFuncReadDiscreteInputs
 </UL>
 
-<P><STRONG><a name="[8f]"></a>eMBRegHoldingCB</STRONG> (Thumb, 110 bytes, Stack size 16 bytes, mb_slave_reg.o(i.eMBRegHoldingCB))
+<P><STRONG><a name="[8f]"></a>eMBRegHoldingCB</STRONG> (Thumb, 102 bytes, Stack size 16 bytes, mb_slave_reg.o(i.eMBRegHoldingCB))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = eMBRegHoldingCB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eMBFuncWriteMultipleHoldingRegister
@@ -869,21 +869,21 @@ Global Symbols
 <LI><a href="#[3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eMBFuncReadHoldingRegister
 </UL>
 
-<P><STRONG><a name="[90]"></a>eMBRegInputCB</STRONG> (Thumb, 72 bytes, Stack size 12 bytes, mb_slave_reg.o(i.eMBRegInputCB))
+<P><STRONG><a name="[90]"></a>eMBRegInputCB</STRONG> (Thumb, 60 bytes, Stack size 12 bytes, mb_slave_reg.o(i.eMBRegInputCB))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = eMBRegInputCB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eMBFuncReadInputRegister
 </UL>
 
-<P><STRONG><a name="[a1]"></a>eMBSetRegCoils</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBSetRegCoils))
+<P><STRONG><a name="[a1]"></a>eMBSetRegCoils</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBSetRegCoils))
 <BR><BR>[Called By]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eQSModbusSlaveTask
 </UL>
 
-<P><STRONG><a name="[a0]"></a>eMBSetRegHolding</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBSetRegHolding))
+<P><STRONG><a name="[a0]"></a>eMBSetRegHolding</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBSetRegHolding))
 <BR><BR>[Called By]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eQSModbusSlaveTask
 </UL>
 
-<P><STRONG><a name="[85]"></a>eMBSetRegInput</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBSetRegInput))
+<P><STRONG><a name="[85]"></a>eMBSetRegInput</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, mb_slave_reg.o(i.eMBSetRegInput))
 <BR><BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartDefaultTask
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eQSModbusSlaveTask
 </UL>

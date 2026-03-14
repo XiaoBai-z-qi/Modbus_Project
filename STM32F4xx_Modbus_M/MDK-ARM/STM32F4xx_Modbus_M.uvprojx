@@ -586,21 +586,6 @@
           <GroupName>Modbus_Function</GroupName>
           <Files>
             <File>
-              <FileName>portevent_m.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\freertos\portevent_m.c</FilePath>
-            </File>
-            <File>
-              <FileName>portserial_m.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\freertos\portserial_m.c</FilePath>
-            </File>
-            <File>
-              <FileName>porttimer_m.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\FreeModbus\freertos\porttimer_m.c</FilePath>
-            </File>
-            <File>
               <FileName>mbfunccoils_m.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\functions\mbfunccoils_m.c</FilePath>
@@ -641,14 +626,29 @@
           <GroupName>Modbus_RTU</GroupName>
           <Files>
             <File>
-              <FileName>mbcrc.c</FileName>
+              <FileName>portevent_m.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\FreeModbus\rtu\mbcrc.c</FilePath>
+              <FilePath>..\FreeModbus\freertos\portevent_m.c</FilePath>
+            </File>
+            <File>
+              <FileName>portserial_m.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FreeModbus\freertos\portserial_m.c</FilePath>
+            </File>
+            <File>
+              <FileName>porttimer_m.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FreeModbus\freertos\porttimer_m.c</FilePath>
             </File>
             <File>
               <FileName>mbrtu_m.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\rtu\mbrtu_m.c</FilePath>
+            </File>
+            <File>
+              <FileName>mbcrc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FreeModbus\rtu\mbcrc.c</FilePath>
             </File>
           </Files>
         </Group>

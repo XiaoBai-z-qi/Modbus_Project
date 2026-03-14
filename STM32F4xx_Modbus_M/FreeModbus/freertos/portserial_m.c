@@ -110,7 +110,7 @@ void QS_USART_IRQHANDLER(void)
     }
 
     if(__HAL_UART_GET_FLAG(&QS_UART, UART_FLAG_RXNE) != RESET){
-        prvvUARTTxReadyISR();
+        prvvUARTRxISR();
     }
 }
 
