@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../FreeModbus;../FreeModbus/app;../FreeModbus/rtu;../FreeModbus/port;../FreeModbus/include;../FreeModbus/functions</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../FreeModbus;../FreeModbus/app;../FreeModbus/rtu;../FreeModbus/port;../FreeModbus/include;../FreeModbus/functions;../Sensor/DHT11</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -664,6 +664,21 @@
               <FileName>mb_slave_reg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FreeModbus\app\mb_slave_reg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>dht11.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Sensor\DHT11\dht11.c</FilePath>
+            </File>
+            <File>
+              <FileName>dht11_function.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Sensor\DHT11\dht11_function.c</FilePath>
             </File>
           </Files>
         </Group>
