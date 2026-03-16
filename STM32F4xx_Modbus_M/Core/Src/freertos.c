@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "debug_printf.h"
 //#include "qs_modbus_app.h"
+#include "w25q64.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -117,10 +118,21 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  uint8_t id1;
+  uint16_t id2;
+  uint8_t ArrayWrite[] = {0x01, 0x02, 0x03, 0x04};	
+  uint8_t ArrayRead[4];
+  W25Q64_Init();
+  W25Q64_ReadID(&id1, &id2);
+  W25Q64_SectorErase(0x00000);
+  W25Q64_Write(0x000000, ArrayWrite, 4);
+  W25Q64_Read(0x000000, ArrayRead, 4);
   /* Infinite loop */
   for(;;)
   {
-    osDelay(100);
+    vDebugPrint("id1 = %02X, id2 = %02X\r\n", id1, id2);
+    vDebugPrint("ArrayRead = %d, %d, %d, %d\r\n", ArrayRead[0], ArrayRead[1], ArrayRead[2], ArrayRead[3]);
+    osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
 }
