@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define W25Q64_CS_Pin GPIO_PIN_13
+#define W25Q64_CS_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
