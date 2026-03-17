@@ -27,7 +27,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
+#include "ymodem.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,6 +50,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t tab_1024[1024];
+extern uint8_t debug_count;
+extern uint8_t FileName[FILE_NAME_LENGTH];
 
 /* USER CODE END PV */
 
@@ -59,7 +64,11 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int fputc(int ch, FILE *f) {
+  (void)f;  // 忽略参数，避免警告
+  HAL_UART_Transmit(&huart1, (const uint8_t *)&ch, 1, 500); // 发送一个字节
+  return ch;
+}
 /* USER CODE END 0 */
 
 /**
@@ -97,13 +106,16 @@ int main(void)
   MX_CRC_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+  //Ymodem_SendByte(CRC16);
+  int32_t size = Ymodem_Receive(&tab_1024[0]);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    printf("while %d, %d, %s\r\n",debug_count, size, FileName);
+    HAL_Delay(2000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

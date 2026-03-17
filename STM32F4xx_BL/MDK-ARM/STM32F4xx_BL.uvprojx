@@ -751,11 +751,6 @@
               <FilePath>..\BootLoard\bl_jump.c</FilePath>
             </File>
             <File>
-              <FileName>uart_com.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\BootLoard\uart_com.c</FilePath>
-            </File>
-            <File>
               <FileName>w25q64.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BootLoard\w25q64.c</FilePath>
