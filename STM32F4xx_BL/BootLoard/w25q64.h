@@ -1,6 +1,8 @@
 #ifndef __W25Q64_H__
 #define __W25Q64_H__
 #include "main.h"
+#include <stdio.h>
+#include <string.h>
 
 #define W25Q64_WRITE_ENABLE							0x06
 #define W25Q64_WRITE_DISABLE						0x04
@@ -43,5 +45,36 @@ void W25Q64_SectorErase(uint32_t addr);
 void W25Q64_ChipErase(void);
 
 
+
+#define FLAG_SECTOR_ADDR    0x000000        // 你指定的地址
+#define FLAG_SECTOR_SIZE    4 * 1024        // 4KB
+#define SLOT_SIZE           32
+#define SLOT_COUNT          (FLAG_SECTOR_SIZE / SLOT_SIZE)  // 128
+#define EMPTY_FLAG          (0xFFFFFFFF)
+#define MAGIC_NUM           (0xa5a5a5a5)
+
+// 槽位地址计算
+#define SLOT_ADDR(num)      (FLAG_SECTOR_ADDR + (num) * SLOT_SIZE)
+
+typedef struct{
+    uint32_t magic;       
+    uint32_t reserved1;          
+
+    uint8_t  upgrade_state;        
+    uint8_t  reserved[3];  
+
+    uint32_t image_size;   // 4  固件大小
+    uint32_t image_crc;    // 4  固件CRC
+
+    uint32_t reserved2;    // 4  预留（以后扩展用）
+
+    uint32_t crc;          // 4  结构CRC（不含magic）
+}UpgradeSlot_t;
+
+
+
+void W25Q64_EraseSlotRegion(void);
+void W25Q64_WriteUpgradeSlot(UpgradeSlot_t *slot);
+uint8_t W25Q64_ReadLatestUpgradeSlot(UpgradeSlot_t *slot);
 
 #endif

@@ -760,6 +760,11 @@
               <FileType>1</FileType>
               <FilePath>..\BootLoard\ymodem.c</FilePath>
             </File>
+            <File>
+              <FileName>w25q64_function.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BootLoard\w25q64_function.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

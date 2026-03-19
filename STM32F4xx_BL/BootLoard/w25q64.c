@@ -1,6 +1,5 @@
 #include "w25q64.h"
-#include <stdio.h>
-#include <string.h>
+
 
 #define W25Q64_BUFF_SIZE 256
 static volatile uint8_t dma_busy_flag = 0;

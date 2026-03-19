@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ymodem.h"
+#include "w25q64.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +55,8 @@ uint8_t tab_1024[1024];
 extern uint8_t debug_count;
 extern uint8_t FileName[FILE_NAME_LENGTH];
 
+UpgradeSlot_t slot;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,8 +68,8 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 int fputc(int ch, FILE *f) {
-  (void)f;  // ºöÂÔ²ÎÊý£¬±ÜÃâ¾¯¸æ
-  HAL_UART_Transmit(&huart1, (const uint8_t *)&ch, 1, 500); // ·¢ËÍÒ»¸ö×Ö½Ú
+  (void)f;  // ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â¾¯ï¿½ï¿½
+  HAL_UART_Transmit(&huart1, (const uint8_t *)&ch, 1, 500); // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö½ï¿½
   return ch;
 }
 /* USER CODE END 0 */
@@ -106,16 +109,25 @@ int main(void)
   MX_CRC_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  //Ymodem_SendByte(CRC16);
-  int32_t size = Ymodem_Receive(&tab_1024[0]);
+  W25Q64_Init();
+  W25Q64_EraseSlotRegion();
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    printf("while %d, %d, %s\r\n",debug_count, size, FileName);
-    HAL_Delay(2000);
+    for(int i=0; i<200; i++)
+    {
+      slot.reserved1 = i;
+      W25Q64_WriteUpgradeSlot(&slot);
+      W25Q64_ReadLatestUpgradeSlot(&slot);
+      printf("%d\r\n", slot.reserved1);
+      HAL_Delay(100);
+    }
+    while(1);
+	  
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
