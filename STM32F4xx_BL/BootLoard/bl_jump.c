@@ -37,7 +37,7 @@ void BL_JumpApplication(void)
     __set_MSP(app_start_addr);
 
 /* ----------------------- 跳转到 App ----------------------------------*/
-
+	__enable_irq();
     /* 执行 APP 的 Reset_Handler，相当于 MCU 重新启动 APP */
     app_reset_handler();
 }

@@ -1,71 +1,82 @@
 #include "w25q64.h"
 
 
-#define W25Q64_BUFF_SIZE 256
-static volatile uint8_t dma_busy_flag = 0;
-uint8_t W25Q64_Buff_Dummy[W25Q64_BUFF_SIZE];
-
-#define W25Q64_CS_LOW()  HAL_GPIO_WritePin(W25Q64_CS_GPIO_Port, W25Q64_CS_Pin, GPIO_PIN_RESET)
-#define W25Q64_CS_HIGH() HAL_GPIO_WritePin(W25Q64_CS_GPIO_Port, W25Q64_CS_Pin, GPIO_PIN_SET)
-
 extern SPI_HandleTypeDef hspi2;
 
-static void W25Q64_WriteEnable(void);
-static void W25Q64_PageWrite(uint32_t addr,uint8_t *buf,uint16_t len);
-static void W25Q64_WaitBusy(void);
-static void W25Q64_SPI_DMA_Transmit(uint8_t *txdata, uint16_t len);
-static void W25Q64_SPI_DMA_Receive(uint8_t *rxdata, uint16_t len);
-static void W25Q64_SPI_DMA_Transmit_Receive(uint8_t *txdata, uint8_t *rxdata, uint16_t len);
+void SPI_Star(void);
+void SPI_Stop(void);
 
-void W25Q64_Init(void)
+
+/**
+ * @brief   交换发送接收的字节
+ * @param   ByteSend  ——  要发送的数据
+ * @retval  收到的数据
+ */
+uint8_t SPI_SwapByte(uint8_t ByteSend)
 {
-    memset(W25Q64_Buff_Dummy,0xFF,sizeof(W25Q64_Buff_Dummy));
+    
+    uint8_t ByteRecv;
+    HAL_SPI_TransmitReceive(&hspi2, &ByteSend, &ByteRecv, 1,1000);
+    return ByteRecv;
 }
 
 
-
+/**
+ * 函    数：W25Q64读取ID号
+ * 参    数：MID 工厂ID，使用输出参数的形式返回
+ * 参    数：DID 设备ID，使用输出参数的形式返回
+ * 返 回 值：无
+ */
 void W25Q64_ReadID(uint8_t *MID, uint16_t *DID)
 {
-    const uint8_t txdata[4] = { W25Q64_JEDEC_ID, 
-                                W25Q64_DUMMY_BYTE, 
-                                W25Q64_DUMMY_BYTE, 
-                                W25Q64_DUMMY_BYTE };
-    uint8_t rxdata[4];
-
-    W25Q64_CS_LOW();
-    W25Q64_SPI_DMA_Transmit_Receive((uint8_t *)txdata, rxdata, 4);
-    W25Q64_CS_HIGH();
-
-    *MID = rxdata[1];
-    *DID = (rxdata[2] << 8) | rxdata[3];
-
+    SPI_Star();								    //SPI起始
+    SPI_SwapByte(W25Q64_JEDEC_ID);			    //交换发送读取ID的指令
+    *MID = SPI_SwapByte(W25Q64_DUMMY_BYTE);	    //交换接收MID，通过输出参数返回
+    *DID = SPI_SwapByte(W25Q64_DUMMY_BYTE);	    //交换接收DID高8位
+    *DID <<= 8;									//高8位移到高位
+    *DID |= SPI_SwapByte(W25Q64_DUMMY_BYTE);	//或上交换接收DID的低8位，通过输出参数返回
+    SPI_Stop();								    //SPI终止
 }
 
-void W25Q64_Read(uint32_t addr, uint8_t *data, uint16_t len)
+//写使能
+void W25Q64_WriteEnable(void)
 {
-    uint8_t cmd[4];
-    cmd[0] = W25Q64_READ_DATA;
-    cmd[1] = (uint8_t)(addr >> 16) & 0xFF;
-    cmd[2] = (uint8_t)(addr >> 8) & 0xFF;
-    cmd[3] = (uint8_t)(addr & 0xFF);
+    SPI_Star();								//SPI起始
+    SPI_SwapByte(W25Q64_WRITE_ENABLE);		//交换发送写使能指令
+    SPI_Stop();								//SPI终止
+}
 
-    W25Q64_CS_LOW();
-    W25Q64_SPI_DMA_Transmit(cmd, 4);
-    while(len)
-    {
-        uint16_t chunk = len > W25Q64_BUFF_SIZE? W25Q64_BUFF_SIZE : len;
-        W25Q64_SPI_DMA_Transmit_Receive(W25Q64_Buff_Dummy, data, chunk);
-        len -= chunk;
-        data += chunk;
-    }
-    W25Q64_CS_HIGH();
-
+//读状态寄存器——判断芯片是否为忙状态
+void W25Q64_WaitBusy(void)
+{
+    SPI_Star();								                    //SPI起始
+    SPI_SwapByte(W25Q64_READ_STATUS_REGISTER_1);	            //交换发送读取状态寄存器指令
+    while((SPI_SwapByte(W25Q64_DUMMY_BYTE) & 0x01) == 0x01);	//等待芯片忙状态
+    SPI_Stop();								                    //SPI终止
 }
 
 
+//页编程
+void W25Q64_PageProgram(uint32_t addr, uint8_t *buf, uint16_t len)
+{
+    W25Q64_WriteEnable();					//写使能
+
+    SPI_Star();								//SPI起始
+    SPI_SwapByte(W25Q64_PAGE_PROGRAM);		//交换发送页编程指令
+    SPI_SwapByte(addr >> 16);				//交换发送地址的高8位
+    SPI_SwapByte(addr >> 8);				//交换发送地址的中间8位
+    SPI_SwapByte(addr);					//交换发送地址的低8位
+    for(uint16_t i = 0; i < len; i++)
+    {
+        SPI_SwapByte(buf[i]);				//交换发送数据
+    }
+    SPI_Stop();								//SPI终止
+
+    W25Q64_WaitBusy();						//等待芯片忙状态
+}
 
 //自动分页写
-void W25Q64_Write(uint32_t addr,uint8_t *buf,uint32_t len)
+void W25Q64_WriteData(uint32_t addr,uint8_t *buf,uint32_t len)
 {
     uint16_t page_remain;
 
@@ -76,7 +87,7 @@ void W25Q64_Write(uint32_t addr,uint8_t *buf,uint32_t len)
         if(len < page_remain)
             page_remain = len;
 
-        W25Q64_PageWrite(addr,buf,page_remain);
+        W25Q64_PageProgram(addr,buf,page_remain);
 
         addr += page_remain;
         buf  += page_remain;
@@ -87,122 +98,73 @@ void W25Q64_Write(uint32_t addr,uint8_t *buf,uint32_t len)
 //扇区擦除
 void W25Q64_SectorErase(uint32_t addr)
 {
-    uint8_t cmd[4];
+    W25Q64_WriteEnable();					//写使能
 
-    cmd[0]=W25Q64_SECTOR_ERASE_4KB;
-    cmd[1]=addr>>16;
-    cmd[2]=addr>>8;
-    cmd[3]=addr;
+    SPI_Star();								//SPI起始
+    SPI_SwapByte(W25Q64_SECTOR_ERASE_4KB);		//交换发送扇区擦除指令
+    SPI_SwapByte(addr >> 16);				//交换发送地址的高8位
+    SPI_SwapByte(addr >> 8);				//交换发送地址的中间8位
+    SPI_SwapByte(addr);					//交换发送地址的低8位
+    SPI_Stop();								//SPI终止
 
-    W25Q64_WriteEnable();
-      
-    W25Q64_CS_LOW();
-    W25Q64_SPI_DMA_Transmit(cmd,4);
-    W25Q64_CS_HIGH();
+    W25Q64_WaitBusy();						//等待芯片忙状态
+}
 
-    W25Q64_WaitBusy();
+
+//块擦除
+void W25Q64_BlockErase(uint32_t addr)
+{
+    W25Q64_WriteEnable();					//写使能
+
+    SPI_Star();								//SPI起始
+    SPI_SwapByte(W25Q64_BLOCK_ERASE_64KB);		//交换发送块擦除指令
+    SPI_SwapByte(addr >> 16);				//交换发送地址的高8位    
+    SPI_SwapByte(addr >> 8);				//交换发送地址的中间8位
+    SPI_SwapByte(addr);					//交换发送地址的低8位
+    SPI_Stop();								//SPI终止
+
+    W25Q64_WaitBusy();						//等待芯片忙状态
 }
 
 //芯片擦除
-void W25Q64_ChipErase(void)
+void W25Q64_ChipErase_NoCheck(void)
 {
-    uint8_t cmd=W25Q64_CHIP_ERASE;
+    W25Q64_WriteEnable();					//写使能
 
-    W25Q64_WriteEnable();
-      
-    W25Q64_CS_LOW();
-    W25Q64_SPI_DMA_Transmit(&cmd,1);
-    W25Q64_CS_HIGH();
+    SPI_Star();								//SPI起始
+    SPI_SwapByte(W25Q64_CHIP_ERASE);			//交换发送芯片擦除指令
+    SPI_Stop();								//SPI终止
 
-    W25Q64_WaitBusy();
+    W25Q64_WaitBusy();						//等待芯片忙状态
 }
 
-static void W25Q64_WriteEnable(void)
+//读取数据
+void W25Q64_ReadData(uint32_t addr, uint8_t *buf, uint32_t len)
 {
-    const uint8_t cmd = W25Q64_WRITE_ENABLE;
-
-    W25Q64_CS_LOW();
-
-    W25Q64_SPI_DMA_Transmit((uint8_t *)&cmd, 1);
-
-    W25Q64_CS_HIGH();
-
-}
-
-static void W25Q64_PageWrite(uint32_t addr,uint8_t *buf,uint16_t len)
-{
-    uint8_t cmd[4];
-
-    cmd[0]=W25Q64_PAGE_PROGRAM;
-    cmd[1]=addr>>16;
-    cmd[2]=addr>>8;
-    cmd[3]=addr;
-
-    W25Q64_WriteEnable();
-     
-    W25Q64_CS_LOW();
-    W25Q64_SPI_DMA_Transmit(cmd,4);
-    W25Q64_SPI_DMA_Transmit(buf,len);
-    W25Q64_CS_HIGH();
-
-    W25Q64_WaitBusy();
-}
-
-static void W25Q64_SPI_DMA_Transmit(uint8_t *txdata, uint16_t len)
-{  
-    dma_busy_flag = 1;
-    HAL_SPI_Transmit_DMA(&hspi2, txdata, len);
-    while(dma_busy_flag);
-    
-}
-
-static void W25Q64_SPI_DMA_Receive(uint8_t *rxdata, uint16_t len)
-{
-    dma_busy_flag = 1;
-    HAL_SPI_Receive_DMA(&hspi2, rxdata, len);
-    while(dma_busy_flag);
-}
-
-static void W25Q64_SPI_DMA_Transmit_Receive(uint8_t *txdata, uint8_t *rxdata, uint16_t len)
-{
-    dma_busy_flag = 1;
-    HAL_SPI_TransmitReceive_DMA(&hspi2, txdata, rxdata, len);
-    while(dma_busy_flag);
-}
-
-static void W25Q64_WaitBusy(void)
-{
-    uint8_t cmd[2] = {W25Q64_READ_STATUS_REGISTER_1, W25Q64_DUMMY_BYTE};
-    uint8_t rx[2];
-
-    do
+    SPI_Star();								//SPI起始
+    SPI_SwapByte(W25Q64_READ_DATA);			//交换发送读取数据指令
+    SPI_SwapByte(addr >> 16);				//交换发送地址的高8位
+    SPI_SwapByte(addr >> 8);				//交换发送地址的中间8位
+    SPI_SwapByte(addr);					//交换发送地址的低8位
+    for(uint32_t i = 0; i < len; i++)
     {
-        W25Q64_CS_LOW();
-        W25Q64_SPI_DMA_Transmit_Receive(cmd, rx, 2);
-        W25Q64_CS_HIGH();
-    } while(rx[1] & 0x01);  // BUSY bit
-}
-
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-    if(hspi == &hspi2)
-    {
-        dma_busy_flag = 0;
+        buf[i] = SPI_SwapByte(W25Q64_DUMMY_BYTE);	//交换接收数据
     }
+    SPI_Stop();								//SPI终止
+}
+  
+
+
+
+
+
+
+void SPI_Star(void)
+{
+    HAL_GPIO_WritePin(W25Q64_CS_GPIO_Port, W25Q64_CS_Pin, GPIO_PIN_RESET);
 }
 
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+void SPI_Stop(void)
 {
-    if(hspi == &hspi2)
-    {
-        dma_busy_flag = 0;
-    }
-}
-
-void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-    if(hspi == &hspi2)
-    {
-        dma_busy_flag = 0;
-    }
+    HAL_GPIO_WritePin(W25Q64_CS_GPIO_Port, W25Q64_CS_Pin, GPIO_PIN_SET);    
 }

@@ -36,45 +36,69 @@
 
 
 
-
-void W25Q64_Init(void);
 void W25Q64_ReadID(uint8_t *MID, uint16_t *DID);
-void W25Q64_Read(uint32_t addr, uint8_t *data, uint16_t len);
-void W25Q64_Write(uint32_t addr,uint8_t *buf,uint32_t len);
+void W25Q64_PageProgram(uint32_t addr, uint8_t *buf, uint16_t len);
 void W25Q64_SectorErase(uint32_t addr);
-void W25Q64_ChipErase(void);
+void W25Q64_BlockErase(uint32_t addr);
+void W25Q64_ChipErase_NoCheck(void);
+void W25Q64_WriteData(uint32_t addr,uint8_t *buf,uint32_t len);
+void W25Q64_ReadData(uint32_t addr, uint8_t *buf, uint32_t len);
 
 
 
-#define FLAG_SECTOR_ADDR    0x000000        // 你指定的地址
-#define FLAG_SECTOR_SIZE    4 * 1024        // 4KB
-#define SLOT_SIZE           32
-#define SLOT_COUNT          (FLAG_SECTOR_SIZE / SLOT_SIZE)  // 128
+
+
+#define FLAG_SECTOR_ADDR    0x7FF000        
+#define FLAG_SECTOR_SIZE    ( 4 * 1024 )                            // 4KB
+#define FLAG_SLOT_SIZE          32
+#define FLAG_SLOT_COUNT     (FLAG_SECTOR_SIZE / FLAG_SLOT_SIZE)     // 128
 #define EMPTY_FLAG          (0xFFFFFFFF)
 #define MAGIC_NUM           (0xa5a5a5a5)
 
 // 槽位地址计算
-#define SLOT_ADDR(num)      (FLAG_SECTOR_ADDR + (num) * SLOT_SIZE)
+#define FLAG_SLOT_ADDR(num)      (FLAG_SECTOR_ADDR + (num) * FLAG_SLOT_SIZE)
+
 
 typedef struct{
-    uint32_t magic;       
-    uint32_t reserved1;          
+    uint32_t magic;               
 
     uint8_t  upgrade_state;        
     uint8_t  reserved[3];  
 
-    uint32_t image_size;   // 4  固件大小
-    uint32_t image_crc;    // 4  固件CRC
+    uint32_t download_addr;         // 下载区地址
+    uint32_t download_crc;             // 固件CRC
 
-    uint32_t reserved2;    // 4  预留（以后扩展用）
+    uint32_t copy_addr;             // 拷贝区地址
+    uint32_t copy_crc;               // 拷贝区CRC
 
-    uint32_t crc;          // 4  结构CRC（不含magic）
+    uint16_t downloard_size_kb;
+    uint16_t copy_size_kb;
+
+    uint32_t crc;                   // 结构CRC（不含magic）
 }UpgradeSlot_t;
 
+typedef enum {
+    UPGRADE_STATE_NONE = 0,           // 无升级
+    UPGRADE_STATE_AVAILABLE,          // 有升级可用（待升级）
+    UPGRADE_STATE_DOWNLOADING,        // 正在下载升级包
+    UPGRADE_STATE_DOWNLOADED,         // 下载完成，待安装
+    UPGRADE_STATE_INSTALLING,         // 正在安装/升级中
+    UPGRADE_STATE_SUCCESS,            // 升级成功
+    UPGRADE_STATE_FAILED,             // 升级失败
+    UPGRADE_STATE_ROLLBACK,           // 正在回滚
+    UPGRADE_STATE_PAUSED,             // 升级暂停
+    UPGRADE_STATE_CANCELLED,          // 升级取消
+    UPGRADE_STATE_CHECKING            // 正在检查更新
+} upgrade_state_t;
 
 
 void W25Q64_EraseSlotRegion(void);
 void W25Q64_WriteUpgradeSlot(UpgradeSlot_t *slot);
 uint8_t W25Q64_ReadLatestUpgradeSlot(UpgradeSlot_t *slot);
 
+void W25Q64_EraseBackupRegion(void);
+void W25Q64_EraseDownloadRegion(void);
+
+
+HAL_StatusTypeDef W25Q64_WriteFlash(uint8_t *buf);
 #endif

@@ -3,8 +3,10 @@
 #include "main.h"
 #include <stdio.h>
 #include <string.h>
+#include "w25q64.h"
 uint8_t FileName[FILE_NAME_LENGTH];
 uint8_t debug_count = 0;
+extern UpgradeSlot_t slot;
 extern UART_HandleTypeDef huart1;
 
 /* ----------------------- ymodem static function ----------------------------------*/
@@ -67,10 +69,11 @@ int32_t Ymodem_Receive(uint8_t *buf)
 {
     uint8_t packet_data[PACKET_1K_SIZE + PACKET_OVERHEAD], file_size[FILE_SIZE_LENGTH], *file_ptr, *buf_ptr;
     int32_t i, packet_length, session_done, file_done, packets_received, errors, session_begin, size = 0;
-    uint32_t flashdestination, ramsource;
+    uint32_t flashdestination = slot.copy_addr;
+    uint32_t ramsource;
 
     /* Initialize flashdestination variable */
-    flashdestination = APPLICATION_ADDRESS;
+    //flashdestination = APPLICATION_ADDRESS;
 
     for (session_done = 0, errors = 0, session_begin = 0;;)
     {
@@ -147,9 +150,16 @@ int32_t Ymodem_Receive(uint8_t *buf)
                                     memcpy(buf_ptr, packet_data + PACKET_HEADER, packet_length);
                                     ramsource = (uint32_t)buf;      // »º³åÇøµØÖ·
 									debug_count++;
+                                    for(int n = 0; n < packet_length; n++)
+                                        slot.copy_crc+=buf_ptr[n];
+
+                                    W25Q64_WriteData(flashdestination + slot.copy_size_kb*1024, (uint8_t*)(packet_data + PACKET_HEADER), packet_length);
+                                    slot.copy_size_kb++;
+
                                     //printf("===yes I recv data===\r\n");
 
                                     /* Write received data in Flash */
+
                                     // if (FLASH_If_Write(&flashdestination, (uint32_t*) ramsource, (uint16_t) packet_length/4)  == 0)
                                     // {
                                          Ymodem_SendByte(ACK);
